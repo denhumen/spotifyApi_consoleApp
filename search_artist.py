@@ -25,7 +25,8 @@ args = parser.parse_args()
 
 def get_token():
     """
-    Function
+    Function gets and
+    return token
     """
     auth_string = client_id + ":" + client_secret
     auth_bytes = auth_string.encode("utf-8")
@@ -45,13 +46,15 @@ def get_token():
 
 def get_auth_header(token):
     """
-    Functiion
+    Auth header function
     """
     return {"Authorization": "Bearer " + token}
 
 def search_for_artist(token, artist_name):
     """
-    Function
+    Function seaches artist and
+    returns information about it if
+    he/she exists
     """
     url = "https://api.spotify.com/v1/search"
     headers = get_auth_header(token)
@@ -66,7 +69,8 @@ def search_for_artist(token, artist_name):
 
 def get_songs_by_artist(token, artist_id):
     """
-    Function
+    Function gets the most popular
+    artist's songs
     """
     url = f"https://api.spotify.com/v1/artists/{artist_id}/top-tracks?country=US"
     headers = get_auth_header(token)
@@ -76,7 +80,8 @@ def get_songs_by_artist(token, artist_id):
 
 def get_available_markets(token: str, song_id: str):
     """
-    Function
+    Function gets countries where
+    searched song is available
     """
     url = f"https://api.spotify.com/v1/tracks/{song_id}"
     headers = get_auth_header(token)
@@ -86,9 +91,40 @@ def get_available_markets(token: str, song_id: str):
 
 def iso_to_name(iso_list: List[str]) -> List[str]:
     """
-    Function
+    Function finds and returns
+    names of the countries using
+    thier iso codes
     """
+    countries = []
+    counter = 0
+    five_countries = []
+    for iso in iso_list:
+        country = pycountry.countries.get(alpha_2=iso)
+        try:
+            five_countries.append(country.name)
+            counter += 1
+            if counter == 5:
+                countries.append(" | ".join(five_countries))
+                five_countries = []
+                counter = 0
+        except Exception:
+            continue
+    return countries
 
 if __name__ == "__main__":
     token = get_token()
     result = search_for_artist(token, args.artist_name)
+    if result == None:
+        print("The artist wasn't found")
+    else:
+        print("Name: " + result['name'] + '\n')
+        artist_id = result["id"]
+        songs = get_songs_by_artist(token, artist_id)
+        print("The most popular songs:")
+        for idx, song in enumerate(songs):
+            print(f"{idx+1}. {song['name']}")
+        iso_list = get_available_markets(token, songs[0]['id'])
+        countries = iso_to_name(iso_list)
+        print('\n' + "Available countries:")
+        for country in countries:
+            print(country)
