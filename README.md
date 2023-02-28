@@ -1,5 +1,7 @@
 # Spotify Console App
+
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
 This is a simple console app that allows users to search for an artist on Spotify and get their full name, top 5 most popular songs, artist ID, and available country markets for their most popular song.
 
